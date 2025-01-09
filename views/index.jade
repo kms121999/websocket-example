@@ -1,0 +1,64 @@
+extends layout
+
+block content
+  h1 #{title} - Chat Room
+
+  // Chat message display section
+  #chat-display
+    ul#messages
+      // Messages will be dynamically added here
+
+  // Message input form
+  form#message-form
+    input#message-input(type="text" name="message" placeholder="Type your message here" required)
+    button(type="submit") Send
+
+  // JavaScript for handling input and display using Socket.IO
+  script.
+    // Function to generate a UUID
+    function uuidv4() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
+      .replace(/[xy]/g, function (c) {
+          const r = Math.random() * 16 | 0; 
+          const v = c == 'x' ? r : (r & 0x3 | 0x8);
+          return v.toString(16);
+      });
+    }
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  script.
+    document.addEventListener('DOMContentLoaded', function() {
+      const userId = uuidv4(); // Declare userId with const
+      const socket = io(); // Connect to the Socket.IO server
+
+      // Listen for incoming messages
+      socket.on('message', function(msg) {
+        const messagesList = document.getElementById('messages');
+        const newMessage = document.createElement('li');
+        newMessage.textContent = msg.text;
+        newMessage.className = 'received'; // Class for received messages
+        messagesList.appendChild(newMessage);
+      });
+
+      // Handle form submission
+      const messageForm = document.getElementById('message-form');
+      messageForm.addEventListener('submit', function(e) {
+        e.preventDefault(); // Prevent default form submission
+        const messageInput = document.getElementById('message-input');
+        const message = messageInput.value.trim(); // Trim whitespace from the message
+        if (message) {
+          // Emit sent message with a sender identifier
+          console.log('Sending message:', message);
+          socket.emit('message', { text: message, sender: userId });
+
+          // Display the sent message
+          const messagesList = document.getElementById('messages');
+          const sentMessage = document.createElement('li');
+          sentMessage.textContent = message;
+          sentMessage.className = 'sent'; // Class for sent messages
+          messagesList.appendChild(sentMessage);
+          
+          messageInput.value = ''; // Clear input field
+          messageInput.focus(); // Optionally refocus the input field
+        }
+      });
+    });

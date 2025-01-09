@@ -1,0 +1,23 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+#messages {
+  list-style-type: none;
+  padding: 0;
+}
+
+.sent {
+  text-align: right; /* Align sent messages to the right */
+  color: blue; /* Change color for sent messages */
+}
+
+.received {
+  text-align: left; /* Align received messages to the left */
+  color: green; /* Change color for received messages */
+}
